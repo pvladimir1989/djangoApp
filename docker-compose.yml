@@ -1,0 +1,112 @@
+version: "3.9"
+   
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${BACKEND_DB_NAME}
+      - POSTGRES_USER=${BACKEND_DB_USER}
+      - POSTGRES_PASSWORD=${BACKEND_DB_PASSWORD}
+#    env_file:
+#      - .env
+  web:
+    build: .
+    command: >
+      sh -c "python3 manage.py migrate &&
+             python3 manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_DB=${BACKEND_DB_NAME}
+      - POSTGRES_USER=${BACKEND_DB_USER}
+      - POSTGRES_PASSWORD=${BACKEND_DB_PASSWORD}
+#    env_file:
+#      - .env
+#      - BACKEND_DB_HOST=postgresql
+
+    depends_on:
+      - db
+      - redis
+
+  rabmq:
+    image: rabbitmq
+
+#  minio:
+#    image: minio
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    volumes:
+      - ../redis-data:/var/lib/redis
+      - ../redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_HOST=redis
+
+  celery:
+    restart: always
+    build: .
+    volumes:
+      - .:/usr/src/app
+#    command: celery -A app worker -l info
+#    environment:
+#      - DEBUG=1
+#      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+#      - CELERY_BROKER=redis://redis:6379/0
+#      - CELERY_BACKEND=redis://redis:6379/0
+#      - SECRET_KEY=${SECRET_KEY}
+#      - ACCOUNT_SID=${ACCOUNT_SID}
+#      - AUTH_TOKEN=${AUTH_TOKEN}
+#      - BACKEND_DB_ENGINE=${BACKEND_DB_ENGINE}
+#      - BACKEND_DB_NAME=postgres
+#      - BACKEND_DB_USER=postgres
+#      - BACKEND_DB_PASSWORD=123456
+#      - BACKEND_DB_HOST=${BACKEND_DB_HOST}
+#      - BACKEND_DB_PORT=${BACKEND_DB_PORT}
+#      - SENTRY_DSN=${SENTRY_DSN}
+    depends_on:
+      - web
+      - redis
+      - db
+
+  celery-beat:
+    build: .
+    command: celery -A testapp beat -l info
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - web
+      - redis
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    depends_on:
+      - web
+
+  elasticsearch:
+    image: launcher.gcr.io/google/elasticsearch2
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+
+volumes:
+  esdata:
+    driver: local
+  pgdata:
+
