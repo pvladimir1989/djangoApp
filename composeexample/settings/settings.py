@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'rest_framework',
     'django_filters',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +57,7 @@ ROOT_URLCONF = 'composeexample.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -114,3 +115,17 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 MAINTENANCE_MODE = False
+
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.github.GithubOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
+SOCIAL_AUTH_GITHUB_KEY = '1f1813a018ab53ae814f'
+SOCIAL_AUTH_GITHUB_SECRET = '4b5a0a5828c81332bf28be34f27c20aac5ed1c73'

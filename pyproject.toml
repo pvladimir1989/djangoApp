@@ -23,6 +23,7 @@ flake8-variables-names = "^0.0.4"
 djangorestframework = "^3.12.4"
 django-filter = "^2.4.0"
 coverage = "^5.5"
+social-auth-app-django = "^5.0.0"
 
 [tool.poetry.dev-dependencies]
 

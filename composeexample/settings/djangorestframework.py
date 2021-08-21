@@ -19,6 +19,10 @@ REST_FRAMEWORK = {
     )
 }
 
+
+
+
+
 # REST_FRAMEWORK = {
 #     # 'DEFAULT_PAGINATION_CLASS': 'beer_app.rest_custom.CustomPagination',
 #     'PAGE_SIZE': 100,
