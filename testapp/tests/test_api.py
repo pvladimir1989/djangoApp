@@ -3,6 +3,7 @@ import json
 from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.exceptions import ErrorDetail
 from rest_framework.test import APITestCase
 
 from testapp.models import Book
@@ -12,7 +13,7 @@ from testapp.serializers import BooksSerializer
 class BooksApiTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create(username='test_username')
-        self.book1 = Book.objects.create(name='test1', price=5, author_name='test1')
+        self.book1 = Book.objects.create(name='test1', price=5, author_name='test1', owner=self.user)
         self.book2 = Book.objects.create(name='test2', price=5, author_name='test5')
         self.book3 = Book.objects.create(name='test3', price=5, author_name='test1')
 
@@ -47,6 +48,8 @@ class BooksApiTestCase(APITestCase):
         response = self.client.post(url, data=json_data, content_type='application/json')
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(4, Book.objects.all().count())
+        self.assertEqual(self.user, Book.objects.last().owner)
+        print(Book.objects.last().owner)
 
     def test_update(self):
         url = reverse('book-detail', args=(self.book1.id,))
@@ -75,9 +78,49 @@ class BooksApiTestCase(APITestCase):
         # json_data = json.dumps(data)
         # self.client.force_login(self.user)
         # response = self.client.put(url, data=json_data, content_type='application/json')
-        response=self.client.delete(url,data=None,content_type='application/json')
+        response = self.client.delete(url, data=None, content_type='application/json')
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         # self.book1 = Book.objects.get(id=self.book1.id)
+        self.book1.refresh_from_db()
+        self.assertEqual(575, self.book1.price)
+
+        # self.assertEqual(4, Book.objects.all().count())
+
+    def test_update_not_owner(self):
+        self.user2 = User.objects.create(username='test_username2', )
+        url = reverse('book-detail', args=(self.book1.id,))
+        data = {
+            "name": self.book1.name,
+            "price": 575,
+            "author_name": self.book1.author_name
+        }
+        json_data = json.dumps(data)
+        self.client.force_login(self.user2)
+        response = self.client.put(url, data=json_data, content_type='application/json')
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+        # self.book1 = Book.objects.get(id=self.book1.id)
+        self.assertEqual({'detail': ErrorDetail(string='You do not have permission to perform this action.',
+                                                code='permission_denied')}, response.data)
+        print(response.data)
+        self.book1.refresh_from_db()
+        self.assertEqual(5, self.book1.price)
+
+        # self.assertEqual(4, Book.objects.all().count())
+
+    def test_update_not_owner_but_staff(self):
+        self.user2 = User.objects.create(username='test_username2', is_staff=True)
+        url = reverse('book-detail', args=(self.book1.id,))
+        data = {
+            "name": self.book1.name,
+            "price": 575,
+            "author_name": self.book1.author_name
+        }
+        json_data = json.dumps(data)
+        self.client.force_login(self.user2)
+        response = self.client.put(url, data=json_data, content_type='application/json')
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        # self.book1 = Book.objects.get(id=self.book1.id)
+        print(response.data)
         self.book1.refresh_from_db()
         self.assertEqual(575, self.book1.price)
 
