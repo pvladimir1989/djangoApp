@@ -136,7 +136,7 @@ class BooksRelationTestCase(APITestCase):
         self.book2 = Book.objects.create(name='test2', price=5, author_name='test5')
 
     def test_like(self):
-        url = reverse('userbookrelation-detail',args=(self.book1.id,))
+        url = reverse('userbookrelation-detail', args=(self.book1.id,))
         data = {
             "like": True,
         }
@@ -144,7 +144,7 @@ class BooksRelationTestCase(APITestCase):
         self.client.force_login(self.user)
         response = self.client.patch(url, data=json_data, content_type='application/json')
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        relation=UserBookRelation.objects.get(user=self.user,book=self.book1)
+        relation = UserBookRelation.objects.get(user=self.user, book=self.book1)
         # self.book1.refresh_from_db()
         self.assertTrue(relation.like)
 
@@ -172,7 +172,7 @@ class BooksRelationTestCase(APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         relation = UserBookRelation.objects.get(user=self.user, book=self.book1)
         # self.book1.refresh_from_db()
-        self.assertEqual(3,relation.rate)
+        self.assertEqual(3, relation.rate)
 
     def test_rate_wrong(self):
         url = reverse('userbookrelation-detail', args=(self.book1.id,))
@@ -186,5 +186,3 @@ class BooksRelationTestCase(APITestCase):
         relation = UserBookRelation.objects.get(user=self.user, book=self.book1)
         # self.book1.refresh_from_db()
         self.assertEqual(3, relation.rate)
-
-
