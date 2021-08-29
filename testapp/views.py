@@ -10,7 +10,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from testapp.models import Book, UserBookRelation
 from testapp.permissions import IsOwnerOrStaffOrReadOnly
-from testapp.serializers import BooksSerializer
+from testapp.serializers import BooksSerializer, UserBookRelationSerializer
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -38,6 +38,13 @@ class BooksViewSet(ModelViewSet):
 class UserBooksRelationView(UpdateModelMixin, GenericViewSet):
     permission_classes = [IsAuthenticated]
     queryset = UserBookRelation.objects.all()
+    serializer_class = UserBookRelationSerializer
+    lookup_field = 'book'
+
+    def get_object(self):
+        obj, _ = UserBookRelation.objects.get_or_create(user=self.request.user, book_id=self.kwargs['book'])
+
+        return obj
 
 
 def auth(request):

@@ -1,12 +1,13 @@
-from django.urls import include,path
+from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
-from testapp.views import index, BooksViewSet
+from testapp.views import index, BooksViewSet, UserBooksRelationView
 from django.contrib import admin
 
 router = SimpleRouter()
 
 router.register(r'book', BooksViewSet)
+router.register(r'book_relation', UserBooksRelationView)
 
 urlpatterns = [
 
