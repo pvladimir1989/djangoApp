@@ -1,3 +1,4 @@
+from django.db.models import Count, Case, When, Avg
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.conf import settings
@@ -22,7 +23,10 @@ def index(request: HttpRequest) -> HttpResponse:
 
 
 class BooksViewSet(ModelViewSet):
-    queryset = Book.objects.all()
+    queryset = Book.objects.all().annotate(
+        annotated_likes=Count(Case(When(userbookrelation__like=True, then=1))),
+        rating=Avg('userbookrelation__rate')).order_by('id')
+
     serializer_class = BooksSerializer
     permission_classes = [IsOwnerOrStaffOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
