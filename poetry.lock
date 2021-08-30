@@ -259,6 +259,18 @@ Django = ">=2.2"
 sqlparse = ">=0.2.0"
 
 [[package]]
+name = "django-debug-toolbar-force"
+version = "0.1.8"
+description = "Force debugging of partial- or non-HTML views in django-debug-toolbar."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+django-nine = ">=0.2.3"
+six = ">=1.4.1"
+
+[[package]]
 name = "django-filter"
 version = "2.4.0"
 description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
@@ -268,6 +280,17 @@ python-versions = ">=3.5"
 
 [package.dependencies]
 Django = ">=2.2"
+
+[[package]]
+name = "django-nine"
+version = "0.2.5"
+description = "Version checking library."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = "*"
 
 [[package]]
 name = "django-timezone-field"
@@ -697,7 +720,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "bd23bf9c12e9982dd4db5f22f75b408cf3c57183fe61c358a94cb52f8420e1ac"
+content-hash = "f536016792269c0f6d22fa457cb3a0aed24d60a7308b01f3409f89818245d08d"
 
 [metadata.files]
 amqp = [
@@ -880,9 +903,17 @@ django-debug-toolbar = [
     {file = "django-debug-toolbar-3.2.2.tar.gz", hash = "sha256:8c5b13795d4040008ee69ba82dcdd259c49db346cf7d0de6e561a49d191f0860"},
     {file = "django_debug_toolbar-3.2.2-py3-none-any.whl", hash = "sha256:d7bab7573fab35b0fd029163371b7182f5826c13da69734beb675c761d06a4d3"},
 ]
+django-debug-toolbar-force = [
+    {file = "django-debug-toolbar-force-0.1.8.tar.gz", hash = "sha256:10f0ec9ebbc0dd872ac810eb7d2033abb78c385fc90d8cf45c3adcc21dce23fb"},
+    {file = "django_debug_toolbar_force-0.1.8-py2.py3-none-any.whl", hash = "sha256:0a47451d910ec248c154d4efdf86ff001a04530f5b64daef73280b317364d09a"},
+]
 django-filter = [
     {file = "django-filter-2.4.0.tar.gz", hash = "sha256:84e9d5bb93f237e451db814ed422a3a625751cbc9968b484ecc74964a8696b06"},
     {file = "django_filter-2.4.0-py3-none-any.whl", hash = "sha256:e00d32cebdb3d54273c48f4f878f898dced8d5dfaad009438fe61ebdf535ace1"},
+]
+django-nine = [
+    {file = "django-nine-0.2.5.tar.gz", hash = "sha256:84322aff8201ceb7647d846ca58863d34e27eb1438aa109819ad091a773a7c96"},
+    {file = "django_nine-0.2.5-py2.py3-none-any.whl", hash = "sha256:17337c28e1a45255f5552a2267e2e943e26c944f6f89ed281e6963b901700647"},
 ]
 django-timezone-field = [
     {file = "django-timezone-field-4.2.1.tar.gz", hash = "sha256:97780cde658daa5094ae515bb55ca97c1352928ab554041207ad515dee3fe971"},

@@ -25,6 +25,7 @@ django-filter = "^2.4.0"
 coverage = "^5.5"
 social-auth-app-django = "^5.0.0"
 django-debug-toolbar = "^3.2.2"
+django-debug-toolbar-force = "^0.1.8"
 
 [tool.poetry.dev-dependencies]
 
