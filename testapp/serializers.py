@@ -14,7 +14,7 @@ class BooksSerializer(ModelSerializer):
         fields = ('id', 'name', 'price', 'author_name', 'likes_count', 'annotated_likes', 'rating')
 
     def get_likes_count(self, instance):
-        UserBookRelation.objects.filter(book=instance, like=True).count()
+        return UserBookRelation.objects.filter(book=instance, like=True).count()
 
 
 class UserBookRelationSerializer(ModelSerializer):

@@ -45,7 +45,7 @@ INSTALLED_APPS = [
 ]
 
 INTERNAL_IPS = [
-    '127.0.0.1',
+    '*',
 ]
 
 MIDDLEWARE = [
@@ -138,3 +138,17 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', default='foo')
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', default='foo')
+
+
+def show_toolbar(request):
+    """
+
+    :type request: HttpRequest
+    """
+    return not request.is_ajax() and request.user and request.user.username == "admin"
+
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': show_toolbar,
+    # Rest of config
+}

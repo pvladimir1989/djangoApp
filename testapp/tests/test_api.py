@@ -13,7 +13,6 @@ from testapp.serializers import BooksSerializer
 
 class BooksApiTestCase(APITestCase):
     def setUp(self):
-
         self.user = User.objects.create(username='test_username')
         self.book1 = Book.objects.create(name='test1', price=5, author_name='test1', owner=self.user)
         self.book2 = Book.objects.create(name='test2', price=5, author_name='test5')
@@ -35,6 +34,18 @@ class BooksApiTestCase(APITestCase):
         self.assertEqual(serializer_data[0]['likes_count'], 1)
         self.assertEqual(serializer_data[0]['annotated_likes'], 1)
         print(response.data)
+
+    def test_get_filter(self):
+        url = reverse('book-list')
+        books = Book.objects.filter(id__in=[self.book2.id, self.book1.id, self.book3.id]).annotate(
+            annotated_likes=Count(Case(When(userbookrelation__like=True, then=1))),
+            rating=Avg('userbookrelation__rate')
+        ).order_by('id')
+        response = self.client.get(url, data={'price': 5})
+        print(response.data)
+        serialized_data = BooksSerializer(books, many=True).data
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(serialized_data, response.data)
 
     def test_get_search(self):
         url = reverse('book-list')
@@ -83,19 +94,22 @@ class BooksApiTestCase(APITestCase):
 
     def test_delete(self):
         url = reverse('book-detail', args=(self.book1.id,))
+        # print(url)
         # data = {
         #     "name": self.book1.name,
         #     "price": 575,
         #     "author_name": self.book1.author_name
         # }
         # json_data = json.dumps(data)
-        # self.client.force_login(self.user)
+        self.client.force_login(self.user)
         # response = self.client.put(url, data=json_data, content_type='application/json')
         response = self.client.delete(url, data=None, content_type='application/json')
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        print(response.data)
+
+        self.assertTrue(response.status_code < 400)
         # self.book1 = Book.objects.get(id=self.book1.id)
-        self.book1.refresh_from_db()
-        self.assertEqual(575, self.book1.price)
+        # self.book1.refresh_from_db()
+        # self.assertEqual(575, self.book1.price)
 
         # self.assertEqual(4, Book.objects.all().count())
 

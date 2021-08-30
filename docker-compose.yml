@@ -54,7 +54,7 @@ services:
       - REDIS_HOST=redis
 
   celery:
-    restart: always
+#    restart: always
     build: .
     volumes:
       - .:/usr/src/app

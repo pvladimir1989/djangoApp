@@ -49,5 +49,7 @@ class BooksSerializerTestCase(TestCase):
                 'rating': '3.50'
             },
         ]
+        print(serializer_data)
+        print(expected_data)
 
         self.assertEqual(serializer_data, expected_data)
