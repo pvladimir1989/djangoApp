@@ -25,7 +25,7 @@ def index(request: HttpRequest) -> HttpResponse:
 class BooksViewSet(ModelViewSet):
     queryset = Book.objects.all().annotate(
         annotated_likes=Count(Case(When(userbookrelation__like=True, then=1))),
-        rating=Avg('userbookrelation__rate')).order_by('id')
+        rating=Avg('userbookrelation__rate')).select_related('owner').prefetch_related('readers').order_by('id')
 
     serializer_class = BooksSerializer
     permission_classes = [IsOwnerOrStaffOrReadOnly]
