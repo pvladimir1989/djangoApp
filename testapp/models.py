@@ -16,6 +16,7 @@ class Book(models.Model):
     author_name = models.CharField(max_length=255)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='my_books')
     readers = models.ManyToManyField(User, through='UserBookRelation', related_name='books')
+    rating = models.DecimalField(max_digits=3, decimal_places=2, default=None, null=True)
 
     def __str__(self):
         # в админке отображается id и name
@@ -27,8 +28,23 @@ class UserBookRelation(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     like = models.BooleanField(default=False)
     in_bookmarks = models.BooleanField(default=False)
-    rate = models.PositiveIntegerField(choices=RATE_CHOICES,null=True)
+    rate = models.PositiveIntegerField(choices=RATE_CHOICES, null=True)
 
     def __str__(self):
         # в админке отображается id и name
         return f'Id {self.user.username}:{self.book.name}, RATE {self.rate}'
+
+    def save(self, *args, **kwargs):
+        from testapp.logic import set_rating
+
+        creating = not self.pk
+        old_rating = self.rate
+
+        super().save(*args, **kwargs)
+
+        new_rating = self.rate
+
+        if old_rating != new_rating or creating:
+            set_rating(self.book)
+
+        set_rating(self.book)
